@@ -11,6 +11,7 @@
 class DmxProxy {
 private:
 	static const uint16_t BAUD_RATE = 250000UL;
+	static const uint16_t FRAME_SIZE = 512;
 
 private:
 	typedef void (callback_t)(std::vector<uint8_t>, std::vector<uint8_t>);
@@ -19,7 +20,7 @@ public:
 	DmxProxy(uint8_t uartIndex);
 	~DmxProxy();
 
-	void setFrameProcessorCallback(callback_t *_callback) { this->callback = _callback; }
+	void setFrameProcessorCallback(callback_t *callback) { this->callback = callback; }
 
 	void begin();
 	void process();
@@ -27,9 +28,12 @@ public:
 private:
 	Uart *uart;
 	callback_t *callback;
+	bool foundFrame;
 
-	std::vector<uint8_t> framebuffer_in;
-	std::vector<uint8_t> framebuffer_out;
+	std::vector<uint8_t> framebufferIn;
+	std::vector<uint8_t> framebufferOut;
+
+	uint16_t framebufferInIndex;
 };
 
 #endif // DMX_PROXY_H
