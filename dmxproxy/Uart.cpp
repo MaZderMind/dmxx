@@ -1,9 +1,10 @@
+#include "bits.h"
 #include "Uart.h"
 
 Uart::Uart(int uartIndex) : uartIndex(uartIndex) {
 }
 
-void Uart::configureBaudRate(uint16_t baud) {
+void Uart::configureBaudRate(uint32_t baud) {
 	// Try u2x mode first
 	uint16_t baud_setting = (F_CPU / 4 / baud - 1) / 2;
 	bool u2x = true;
@@ -20,32 +21,45 @@ void Uart::configureBaudRate(uint16_t baud) {
 	}
 
 	// assign the baud_setting, a.k.a. ubrr (USART Baud Rate Register)
-	switch(uartIndex) {
-		case 0:
-			SETBITIF(UCSRA, U2X, u2x);
-			UBRRH = (uint8_t)(baud_setting >> 8);
-			UBRRL = (uint8_t)baud_setting;
-		break;
+	#if !UART_SUPPORTS_MULTIPLE
+		SETBITIF(UCSRA, U2X, u2x);
+		UBRRH = (uint8_t)(baud_setting >> 8);
+		UBRRL = (uint8_t)baud_setting;
+	#else
+		uint8_t ubrrh = (uint8_t)(baud_setting >> 8);
+		uint8_t ubrrl = (uint8_t)baud_setting;
+		switch(uartIndex) {
+			case 0:
+				SETBITIF(UCSR0A, U2X0, u2x);
+				UBRR0H = ubrrh;
+				UBRR0L = ubrrl;
+			break;
 
-		case 1:
-			SETBITIF(UCSRA, U2X, u2x);
-			UBRRH = (uint8_t)(baud_setting >> 8);
-			UBRRL = (uint8_t)baud_setting;
-		break;
+			case 1:
+				SETBITIF(UCSR1A, U2X1, u2x);
+				UBRR1H = ubrrh;
+				UBRR1L = ubrrl;
+			break;
 
-		case 0:
-			SETBITIF(UCSRA, U2X, u2x);
-			UBRRH = (uint8_t)(baud_setting >> 8);
-			UBRRL = (uint8_t)baud_setting;
-		break;
+			case 2:
+				SETBITIF(UCSR2A, U2X2, u2x);
+				UBRR2H = ubrrh;
+				UBRR2L = ubrrl;
+			break;
 
-		case 0:
-			SETBITIF(UCSRA, U2X, u2x);
-			UBRRH = (uint8_t)(baud_setting >> 8);
-			UBRRL = (uint8_t)baud_setting;
-		break;
+			case 3:
+				SETBITIF(UCSR3A, U2X3, u2x);
+				UBRR3H = ubrrh;
+				UBRR3L = ubrrl;
+			break;
+		}
+	#endif
 }
 
+void Uart::enable() {
+	enableRx();
+	enableTx();
+}
 
 void Uart::enableTx() {
 
@@ -58,5 +72,23 @@ void Uart::enableRx() {
 
 }
 void Uart::disableRx() {
+
+}
+
+void Uart::busyLoopUntilRxComplete()
+{
+
+}
+
+uint8_t Uart::lastByte()
+{
+	return 42;
+}
+
+void Uart::transmit(const char* message) {
+
+}
+
+void Uart::transmit(const uint8_t number) {
 
 }

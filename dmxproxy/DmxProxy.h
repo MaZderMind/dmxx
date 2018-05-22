@@ -3,37 +3,35 @@
 
 #include <inttypes.h>
 
-#include <StandardCplusplus.h>
-#include <vector>
-
 #include "Uart.h"
 
 class DmxProxy {
-private:
-	static const uint16_t BAUD_RATE = 250000UL;
+public:
 	static const uint16_t FRAME_SIZE = 512;
 
 private:
-	typedef void (callback_t)(std::vector<uint8_t>, std::vector<uint8_t>);
+	static const uint32_t BAUD_RATE = 250000;
+
+private:
+	typedef void (callback_t)(uint8_t*, uint8_t*);
 
 public:
 	DmxProxy(uint8_t uartIndex);
-	~DmxProxy();
 
 	void setFrameProcessorCallback(callback_t *callback) { this->callback = callback; }
 
-	void begin();
+	void enable();
 	void process();
 
 private:
-	Uart *uart;
+	Uart uart;
 	callback_t *callback;
 	bool foundFrame;
 
-	std::vector<uint8_t> framebufferIn;
-	std::vector<uint8_t> framebufferOut;
-
 	uint16_t framebufferInIndex;
+
+	uint8_t framebufferIn[FRAME_SIZE];
+	uint8_t framebufferOut[FRAME_SIZE];
 };
 
 #endif // DMX_PROXY_H

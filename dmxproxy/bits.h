@@ -42,7 +42,7 @@
 #define SETBIT(x,y) SETBITS((x), (BIT((y))))
 #define SETBITLONG(x,y) SETBITS((x), (BITLONG((y))))
 
-#define SETBITIF(x,y,q) {if(q) { SETBITS((x), (BIT((y)))); } else { CLEARBITS((x), (BIT((y)))); }}
+#define SETBITIF(x,y,q) {if(q) {SETBITS((x), (BIT((y))));} else {CLEARBITS((x), (BIT((y))));}}
 
 
 /**

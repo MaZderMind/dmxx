@@ -1,40 +1,30 @@
-#include "Arduino.h"
-
 #include "DmxProxy.h"
 #include "bits.h"
 
 DmxProxy::DmxProxy(uint8_t uartIndex):
+	uart(uartIndex),
 	foundFrame(false),
 	framebufferInIndex(0),
-	framebufferIn(FRAME_SIZE),
-	framebufferOut(FRAME_SIZE)
+	framebufferIn(),
+	framebufferOut()
 {
-	uart = new Uart(uartIndex);
 }
 
-void DmxProxy::begin() {
+void DmxProxy::enable() {
 	// set 250 kBaud
-	uart->configureBaudRate(DmxProxy::BAUD_RATE);
-
-	uart->enableTx();
-	uart->enableRx();
+	uart.configureBaudRate(DmxProxy::BAUD_RATE);
+	uart.enable();
 }
 
 void DmxProxy::process() {
-	uart->busyLoopUntilRxComplete();
-
-	// read byte
-	uint8_t inputByte = uart->udr;
+	uart.busyLoopUntilError();
+	uart.busyLoopUntilRxComplete();
+	uint8_t inputByte = uart.lastByte();
 
 	framebufferIn[++framebufferInIndex] = inputByte;
 
 	if(framebufferInIndex == DmxProxy::FRAME_SIZE) {
-		Serial.println("Calling Callback");
 		callback(framebufferIn, framebufferOut);
 		framebufferInIndex = 0;
 	}
-}
-
-DmxProxy::~DmxProxy() {
-	delete uart;
 }
