@@ -53,6 +53,8 @@
 	#endif
 #endif
 
+enum class UartBusyLoopReturn { RXTX_COMPLETE, ERROR };
+
 class Uart {
 public:
 	Uart(int uartIndex);
@@ -67,8 +69,11 @@ public:
 	void enableRx();
 	void disableRx();
 
-	void busyLoopUntilRxComplete();
-	uint8_t lastByte();
+	void setTx(bool enabled);
+	void setRx(bool enabled);
+
+	UartBusyLoopReturn busyLoopUntilErrorOrRxAndTxComplete();
+	uint8_t lastRxByte();
 
 	void transmit(const char* message);
 	void transmit(const uint8_t number);

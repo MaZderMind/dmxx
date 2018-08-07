@@ -62,25 +62,66 @@ void Uart::enable() {
 }
 
 void Uart::enableTx() {
-
+	setTx(true);
 }
 void Uart::disableTx() {
-
+	setTx(false);
 }
-
 void Uart::enableRx() {
-
+	setRx(true);
 }
 void Uart::disableRx() {
-
+	setRx(false);
 }
 
-void Uart::busyLoopUntilRxComplete()
+void Uart::setTx(bool enabled) {
+	#if !UART_SUPPORTS_MULTIPLE
+		SETBITIF(UCSRB, TXEN, enabled);
+	#else
+		switch(uartIndex) {
+			case 0:
+				SETBITIF(UCSR0B, TXEN0, enabled)
+			break;
+			case 1:
+				SETBITIF(UCSR1B, TXEN1, enabled)
+			break;
+			case 2:
+				SETBITIF(UCSR2B, TXEN2, enabled)
+			break;
+			case 3:
+				SETBITIF(UCSR3B, TXEN3, enabled)
+			break;
+		}
+	#endif
+}
+
+void Uart::setRx(bool enabled) {
+	#if !UART_SUPPORTS_MULTIPLE
+		SETBITIF(UCSRB, RXEN, enabled);
+	#else
+		switch(uartIndex) {
+			case 0:
+				SETBITIF(UCSR0B, RXEN0, enabled)
+			break;
+			case 1:
+				SETBITIF(UCSR1B, RXEN1, enabled)
+			break;
+			case 2:
+				SETBITIF(UCSR2B, RXEN2, enabled)
+			break;
+			case 3:
+				SETBITIF(UCSR3B, RXEN3, enabled)
+			break;
+		}
+	#endif
+}
+
+UartBusyLoopReturn Uart::busyLoopUntilErrorOrRxAndTxComplete()
 {
-
+	return UartBusyLoopReturn::RXTX_COMPLETE;
 }
 
-uint8_t Uart::lastByte()
+uint8_t Uart::lastRxByte()
 {
 	return 42;
 }

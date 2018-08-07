@@ -26,9 +26,8 @@ public:
 private:
 	Uart uart;
 	callback_t *callback;
-	bool foundFrame;
 
-	uint16_t framebufferInIndex;
+	uint16_t framebufferIndex;
 
 	uint8_t framebufferIn[FRAME_SIZE];
 	uint8_t framebufferOut[FRAME_SIZE];
