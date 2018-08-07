@@ -1,7 +1,10 @@
 #include "DmxProxy.h"
+#include "Debug.h"
 #include "bits.h"
 
 #include <string.h>
+
+extern Debug debug;
 
 DmxProxy::DmxProxy(uint8_t uartIndex):
 	uart(uartIndex),
@@ -18,6 +21,7 @@ void DmxProxy::enable() {
 }
 
 void DmxProxy::process() {
+	debug.print("DmxProxy::process");
 	UartBusyLoopReturn state = uart.busyLoopUntilErrorOrRxAndTxComplete();
 
 	if(state == UartBusyLoopReturn::ERROR) {
