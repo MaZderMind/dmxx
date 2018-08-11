@@ -116,20 +116,115 @@ void Uart::setRx(bool enabled) {
 	#endif
 }
 
-UartBusyLoopReturn Uart::busyLoopUntilErrorOrRxAndTxComplete()
-{
-	return UartBusyLoopReturn::RXTX_COMPLETE;
+bool Uart::txComplete() {
+	#if !UART_SUPPORTS_MULTIPLE
+		return BITSET(UCSRA, UDRE);
+	#else
+		switch(uartIndex) {
+			case 0:
+				return BITSET(UCSR0A, UDRE0);
+			break;
+			case 1:
+				return BITSET(UCSR1A, UDRE1);
+			break;
+			case 2:
+				return BITSET(UCSR2A, UDRE2);
+			break;
+			case 3:
+				return BITSET(UCSR3A, UDRE3);
+			break;
+		}
+	#endif
+
+	return false;
 }
 
-uint8_t Uart::lastRxByte()
-{
-	return 42;
+bool Uart::rxComplete() {
+	#if !UART_SUPPORTS_MULTIPLE
+		return BITSET(UCSRA, RXC);
+	#else
+		switch(uartIndex) {
+			case 0:
+				return BITSET(UCSR0A, RXC0);
+			break;
+			case 1:
+				return BITSET(UCSR1A, RXC1);
+			break;
+			case 2:
+				return BITSET(UCSR2A, RXC2);
+			break;
+			case 3:
+				return BITSET(UCSR3A, RXC3);
+			break;
+		}
+	#endif
+
+	return false;
 }
 
-void Uart::transmit(const char* message) {
+bool Uart::frameError() {
+	#if !UART_SUPPORTS_MULTIPLE
+		return BITSET(UCSRA, FE);
+	#else
+		switch(uartIndex) {
+			case 0:
+				return BITSET(UCSR0A, FE0);
+			break;
+			case 1:
+				return BITSET(UCSR1A, FE1);
+			break;
+			case 2:
+				return BITSET(UCSR2A, FE2);
+			break;
+			case 3:
+				return BITSET(UCSR3A, FE3);
+			break;
+		}
+	#endif
 
+	return false;
 }
 
-void Uart::transmit(const uint8_t number) {
+uint8_t Uart::lastRxByte() {
+	#if !UART_SUPPORTS_MULTIPLE
+		return UDR;
+	#else
+		switch(uartIndex) {
+			case 0:
+				return UDR0;
+			break;
+			case 1:
+				return UDR1;
+			break;
+			case 2:
+				return UDR2;
+			break;
+			case 3:
+				return UDR3;
+			break;
+		}
+	#endif
 
+	return 0;
+}
+
+void Uart::transmit(const uint8_t byte) {
+	#if !UART_SUPPORTS_MULTIPLE
+		UDR = byte;
+	#else
+		switch(uartIndex) {
+			case 0:
+				UDR0 = byte;
+			break;
+			case 1:
+				UDR1 = byte;
+			break;
+			case 2:
+				UDR2 = byte;
+			break;
+			case 3:
+				UDR3 = byte;
+			break;
+		}
+	#endif
 }

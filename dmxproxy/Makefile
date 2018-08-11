@@ -5,8 +5,8 @@
 # (GNU make, BSD make, SysV make) - adapted to c++
 
 
-#MCU = atmega1280
-MCU = atmega328
+MCU = atmega1280
+#MCU = atmega328
 FORMAT = ihex
 TARGET = main
 SRC = $(wildcard *.cpp)
@@ -148,7 +148,7 @@ lss: $(TARGET).lss
 sym: $(TARGET).sym
 
 
-# Program the device.  
+# Program the device.
 program: build
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH)
 
@@ -163,6 +163,10 @@ program-fuse:
 size: $(TARGET).elf
 	$(AVRSIZE) --mcu=$(MCU) --format=avr $(TARGET).elf
 
+
+
+terminal:
+	picocom --baud 57600 --echo $(AVRDUDE_PORT)
 
 # Convert ELF to COFF for use in debugging / simulating in AVR Studio or VMLAB.
 COFFCONVERT=$(OBJCOPY) --debugging \

@@ -5,6 +5,7 @@
 
 #include "Uart.h"
 
+
 class DmxProxy {
 public:
 	static const uint16_t FRAME_SIZE = 512;
@@ -27,7 +28,8 @@ private:
 	Uart uart;
 	callback_t *callback;
 
-	uint16_t framebufferIndex;
+	uint16_t framebufferInIndex;
+	uint16_t framebufferOutIndex;
 
 	uint8_t framebufferIn[FRAME_SIZE];
 	uint8_t framebufferOut[FRAME_SIZE];

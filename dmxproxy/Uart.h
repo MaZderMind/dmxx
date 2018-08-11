@@ -4,12 +4,14 @@
 #include <avr/io.h>
 #include <inttypes.h>
 
-#ifdef UDR4
+#ifdef UDR3
 	// supports up to 4 UARTs
 	#define UART_SUPPORTS_MULTIPLE (1)
+	#pragma message("UART_SUPPORTS_MULTIPLE")
 #else
 	// only supports one UART but has numbered naming
 	#ifdef UDR0
+		#pragma message("NO UART_SUPPORTS_MULTIPLE with NUMBERING")
 		#define UART_SUPPORTS_MULTIPLE (0)
 
 		#define UCSRA UCSR0A
@@ -45,15 +47,14 @@
 		#define UCPOL UCPOL0
 	#else
 		#ifdef UDR
-		// only supports one UART with default-naming
+			// only supports one UART with default-naming
+			#pragma message("NO UART_SUPPORTS_MULTIPLE without NUMBERING")
 			#define UART_SUPPORTS_MULTIPLE (0)
 		#else
 			#error Unsupported UART Configuration
 		#endif
 	#endif
 #endif
-
-enum class UartBusyLoopReturn { RXTX_COMPLETE, ERROR };
 
 class Uart {
 public:
@@ -72,11 +73,12 @@ public:
 	void setTx(bool enabled);
 	void setRx(bool enabled);
 
-	UartBusyLoopReturn busyLoopUntilErrorOrRxAndTxComplete();
+	bool rxComplete();
+	bool txComplete();
+	bool frameError();
 	uint8_t lastRxByte();
 
-	void transmit(const char* message);
-	void transmit(const uint8_t number);
+	void transmit(const uint8_t byte);
 
 private:
 	int uartIndex;

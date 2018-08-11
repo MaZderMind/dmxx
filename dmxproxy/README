@@ -1,1 +1,3 @@
-sudo apt install gcc-avr avr-libc avrdude make
+sudo apt install gcc-avr avr-libc avrdude make picocom
+
+make build program terminal

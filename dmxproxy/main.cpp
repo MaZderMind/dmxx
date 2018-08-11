@@ -6,12 +6,12 @@ Debug debug(0);
 DmxProxy proxy(1);
 
 void frameCallback(uint8_t *input, uint8_t *output) {
-	debug.print("got frame \n");
+	debug.println("got frame");
 	for(uint16_t i = 0; i < DmxProxy::FRAME_SIZE; i++) {
 		debug.print(input[i]);
 		debug.print(" "); 
 	}
-	debug.print("\n");
+	debug.println();
 
 	output[0] = input[0];
 	output[1] = 255 - input[0];
@@ -20,25 +20,25 @@ void frameCallback(uint8_t *input, uint8_t *output) {
 	output[3] = input[1];
 	output[4] = input[1];
 
-	debug.print("new frame \n");
+	debug.println("new frame");
 	for(uint16_t i = 0; i < DmxProxy::FRAME_SIZE; i++) {
 		debug.print(output[i]);
 		debug.print(" "); 
 	}
-	debug.print("\n");
+	debug.println();
 }
 
 int main() {
-	debug.print("setup\n");
+	debug.println("setup");
 
 	proxy.setFrameProcessorCallback(&frameCallback);
 	proxy.enable();
 
-	debug.print("done");
+	debug.println("done");
 
 	while(true) {
-		debug.print("process");
+//		debug.println("process");
 		proxy.process();
-		debug.print("done");
+//		debug.println("done");
 	}
 }
