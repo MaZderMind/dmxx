@@ -2,6 +2,105 @@
 #include "Uart.h"
 
 Uart::Uart(int uartIndex) : uartIndex(uartIndex) {
+	configurePins();
+}
+void Uart::configure8N1() {
+	#if !UART_SUPPORTS_MULTIPLE
+		SETBITS(UCSRC, BIT(URSEL) | BIT(UCSZ1) | BIT(UCSZ0));  // Asynchron 8N1
+	#else
+		switch(uartIndex) {
+			case 0:
+				SETBITS(UCSR0C, BIT(UCSZ00) | BIT(UCSZ01));  // Asynchron 8N1
+			break;
+			case 1:
+				SETBITS(UCSR1C, BIT(UCSZ10) | BIT(UCSZ11));  // Asynchron 8N1
+			break;
+			case 2:
+				SETBITS(UCSR2C, BIT(UCSZ20) | BIT(UCSZ21));  // Asynchron 8N1
+			break;
+			case 3:
+				SETBITS(UCSR3C, BIT(UCSZ30) | BIT(UCSZ31));  // Asynchron 8N1
+			break;
+		}
+	#endif
+}
+
+void Uart::configure8N2() {
+	#if !UART_SUPPORTS_MULTIPLE
+		SETBITS(UCSRC, BIT(USBS) | BIT(UCSZ1) | BIT(UCSZ0));  // Asynchron 8N2
+	#else
+		switch(uartIndex) {
+			case 0:
+				SETBITS(UCSR0C, BIT(USBS0) | BIT(UCSZ00) | BIT(UCSZ01));  // Asynchron 8N2
+			break;
+			case 1:
+				SETBITS(UCSR1C, BIT(USBS1) | BIT(UCSZ10) | BIT(UCSZ11));  // Asynchron 8N2
+			break;
+			case 2:
+				SETBITS(UCSR2C, BIT(USBS2) | BIT(UCSZ20) | BIT(UCSZ21));  // Asynchron 8N2
+			break;
+			case 3:
+				SETBITS(UCSR3C, BIT(USBS3) | BIT(UCSZ30) | BIT(UCSZ31));  // Asynchron 8N2
+			break;
+		}
+	#endif
+}
+
+void Uart::configurePins() {
+	#if !UART_SUPPORTS_MULTIPLE
+		CLEARBIT(UART0_DDR, UART0_PIN_RX); // input
+		CLEARBIT(UART0_PORT, UART0_PIN_RX); // pullup off
+		SETBIT(UART0_DDR, UART0_PIN_TX);    // output
+		CLEARBIT(UART0_PORT, UART0_PIN_TX); // low
+	#else
+		switch(uartIndex) {
+			case 0:
+				CLEARBIT(UART0_DDR, UART0_PIN_RX);  // input
+				CLEARBIT(UART0_PORT, UART0_PIN_RX); // pullup off
+				SETBIT(UART0_DDR, UART0_PIN_TX);    // output
+				CLEARBIT(UART0_PORT, UART0_PIN_TX); // low
+			break;
+			case 1:
+				CLEARBIT(UART1_DDR, UART1_PIN_RX);  // input
+				CLEARBIT(UART1_PORT, UART1_PIN_RX); // pullup off
+				SETBIT(UART1_DDR, UART1_PIN_TX);    // output
+				CLEARBIT(UART1_PORT, UART1_PIN_TX); // low
+			break;
+			case 2:
+				CLEARBIT(UART2_DDR, UART2_PIN_RX);  // input
+				CLEARBIT(UART2_PORT, UART2_PIN_RX); // pullup off
+				SETBIT(UART2_DDR, UART2_PIN_TX);    // output
+				CLEARBIT(UART2_PORT, UART2_PIN_TX); // low
+			break;
+			case 3:
+				CLEARBIT(UART3_DDR, UART3_PIN_RX);  // input
+				CLEARBIT(UART3_PORT, UART3_PIN_RX); // pullup off
+				SETBIT(UART3_DDR, UART3_PIN_TX);    // output
+				CLEARBIT(UART3_PORT, UART3_PIN_TX); // low
+			break;
+		}
+	#endif
+}
+
+void Uart::setTxLevel(bool value) {
+	#if !UART_SUPPORTS_MULTIPLE
+		SETBITIF(UART0_PORT, UART0_PIN_TX, value);
+	#else
+		switch(uartIndex) {
+			case 0:
+				SETBITIF(UART0_PORT, UART0_PIN_TX, value);
+			break;
+			case 1:
+				SETBITIF(UART1_PORT, UART1_PIN_TX, value);
+			break;
+			case 2:
+				SETBITIF(UART2_PORT, UART2_PIN_TX, value);
+			break;
+			case 3:
+				SETBITIF(UART3_PORT, UART3_PIN_TX, value);
+			break;
+		}
+	#endif
 }
 
 void Uart::configureBaudRate(uint32_t baud) {
@@ -62,19 +161,19 @@ void Uart::enable() {
 }
 
 void Uart::enableTx() {
-	setTx(true);
+	setTxEnabled(true);
 }
 void Uart::disableTx() {
-	setTx(false);
+	setTxEnabled(false);
 }
 void Uart::enableRx() {
-	setRx(true);
+	setRxEnabled(true);
 }
 void Uart::disableRx() {
-	setRx(false);
+	setRxEnabled(false);
 }
 
-void Uart::setTx(bool enabled) {
+void Uart::setTxEnabled(bool enabled) {
 	#if !UART_SUPPORTS_MULTIPLE
 		SETBITIF(UCSRB, TXEN, enabled);
 	#else
@@ -95,7 +194,7 @@ void Uart::setTx(bool enabled) {
 	#endif
 }
 
-void Uart::setRx(bool enabled) {
+void Uart::setRxEnabled(bool enabled) {
 	#if !UART_SUPPORTS_MULTIPLE
 		SETBITIF(UCSRB, RXEN, enabled);
 	#else
@@ -116,7 +215,7 @@ void Uart::setRx(bool enabled) {
 	#endif
 }
 
-bool Uart::txComplete() {
+bool Uart::txPossible() {
 	#if !UART_SUPPORTS_MULTIPLE
 		return BITSET(UCSRA, UDRE);
 	#else

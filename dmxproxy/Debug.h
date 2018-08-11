@@ -21,6 +21,7 @@ public:
 	void println();
 	void print(const uint8_t number);
 
+	void blink(bool value);
 	void blink();
 
 private:
@@ -33,6 +34,8 @@ public:
 	void println(const char* message) { (void)(message); };
 	void println() { };
 	void print(const uint8_t number) { (void)(number); };
+
+	void blink(bool value) { (void)(value); };
 	void blink() { };
 };
 

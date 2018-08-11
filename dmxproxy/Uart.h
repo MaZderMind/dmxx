@@ -4,14 +4,36 @@
 #include <avr/io.h>
 #include <inttypes.h>
 
+#ifdef __AVR_ATmega1280__
+	#define UART0_PORT PORTE
+	#define UART0_DDR DDRE
+	#define UART0_PIN_TX PE1
+	#define UART0_PIN_RX PE0
+
+	#define UART1_PORT PORTD
+	#define UART1_DDR DDRD
+	#define UART1_PIN_TX PD3
+	#define UART1_PIN_RX PD1
+
+	#define UART2_PORT PORTH
+	#define UART2_DDR DDRH
+	#define UART2_PIN_TX PH1
+	#define UART2_PIN_RX PH0
+
+	#define UART3_PORT PORTJ
+	#define UART3_DDR  DDRJ
+	#define UART3_PIN_TX PJ1
+	#define UART3_PIN_RX PJ0
+#else
+	#error UART Pinset unknown for this Device
+#endif
+
 #ifdef UDR3
 	// supports up to 4 UARTs
 	#define UART_SUPPORTS_MULTIPLE (1)
-	#pragma message("UART_SUPPORTS_MULTIPLE")
 #else
 	// only supports one UART but has numbered naming
 	#ifdef UDR0
-		#pragma message("NO UART_SUPPORTS_MULTIPLE with NUMBERING")
 		#define UART_SUPPORTS_MULTIPLE (0)
 
 		#define UCSRA UCSR0A
@@ -48,7 +70,6 @@
 	#else
 		#ifdef UDR
 			// only supports one UART with default-naming
-			#pragma message("NO UART_SUPPORTS_MULTIPLE without NUMBERING")
 			#define UART_SUPPORTS_MULTIPLE (0)
 		#else
 			#error Unsupported UART Configuration
@@ -61,6 +82,8 @@ public:
 	Uart(int uartIndex);
 
 	void configureBaudRate(uint32_t baudRate);
+	void configure8N1();
+	void configure8N2();
 
 	void enable();
 
@@ -70,15 +93,20 @@ public:
 	void enableRx();
 	void disableRx();
 
-	void setTx(bool enabled);
-	void setRx(bool enabled);
+	void setTxLevel(bool level);
+
+	void setTxEnabled(bool enabled);
+	void setRxEnabled(bool enabled);
 
 	bool rxComplete();
-	bool txComplete();
+	bool txPossible();
 	bool frameError();
 	uint8_t lastRxByte();
 
 	void transmit(const uint8_t byte);
+
+private:
+	void configurePins();
 
 private:
 	int uartIndex;
