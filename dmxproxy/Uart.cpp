@@ -6,7 +6,7 @@ Uart::Uart(int uartIndex) : uartIndex(uartIndex) {
 }
 void Uart::configure8N1() {
 	#if !UART_SUPPORTS_MULTIPLE
-		SETBITS(UCSRC, BIT(URSEL) | BIT(UCSZ1) | BIT(UCSZ0));  // Asynchron 8N1
+		SETBITS(UCSRC, BIT(UCSZ1) | BIT(UCSZ0));  // Asynchron 8N1
 	#else
 		switch(uartIndex) {
 			case 0:
@@ -48,10 +48,10 @@ void Uart::configure8N2() {
 
 void Uart::configurePins() {
 	#if !UART_SUPPORTS_MULTIPLE
-		CLEARBIT(UART0_DDR, UART0_PIN_RX); // input
-		CLEARBIT(UART0_PORT, UART0_PIN_RX); // pullup off
-		SETBIT(UART0_DDR, UART0_PIN_TX);    // output
-		CLEARBIT(UART0_PORT, UART0_PIN_TX); // low
+		CLEARBIT(UART_DDR, UART_PIN_RX); // input
+		CLEARBIT(UART_PORT, UART_PIN_RX); // pullup off
+		SETBIT(UART_DDR, UART_PIN_TX);    // output
+		CLEARBIT(UART_PORT, UART_PIN_TX); // low
 	#else
 		switch(uartIndex) {
 			case 0:
@@ -84,7 +84,7 @@ void Uart::configurePins() {
 
 void Uart::setTxLevel(bool value) {
 	#if !UART_SUPPORTS_MULTIPLE
-		SETBITIF(UART0_PORT, UART0_PIN_TX, value);
+		SETBITIF(UART_PORT, UART_PIN_TX, value);
 	#else
 		switch(uartIndex) {
 			case 0:
