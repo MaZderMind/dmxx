@@ -4,9 +4,8 @@
 # is public domain), believed to be neutral to any flavor of "make"
 # (GNU make, BSD make, SysV make) - adapted to c++
 
-
 MCU = atmega1280
-#MCU = atmega328
+MCU = atmega328p
 FORMAT = ihex
 TARGET = main
 SRC = $(wildcard *.cpp)
@@ -92,7 +91,7 @@ AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 AVRDUDE_WRITE_FUSE = -U lfuse:w:0xc0:m -U hfuse:w:0xd9:m -U efuse:w:0xff:m
 
-AVRDUDE_OPTIONS = -b 57600
+AVRDUDE_OPTIONS = -b 115200
 
 # Uncomment the following if you want avrdude's erase cycle counter.
 # Note that this counter needs to be initialized first using -Yn,
