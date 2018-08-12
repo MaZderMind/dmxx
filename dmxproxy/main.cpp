@@ -1,11 +1,12 @@
 #include "DmxProxy.h"
 #include "Debug.h"
 
-Debug debug(0);
-//DebugStub debug;
+Debug debug;
 DmxProxy proxy(1);
 
 uint16_t frameCallback(uint8_t *input, uint8_t *output) {
+	debug.toggle();
+
 	uint16_t total = input[7];
 	output[0*16 + 4] = total * input[0] / 255; // total fixture 0
 	output[1*16 + 4] = total * input[1] / 255; // total fixture 1
@@ -31,12 +32,8 @@ uint16_t frameCallback(uint8_t *input, uint8_t *output) {
 }
 
 int main() {
-	debug.println("setup");
-
 	proxy.setFrameProcessorCallback(&frameCallback);
 	proxy.enable();
-
-	debug.println("done");
 
 	while(true) {
 		proxy.process();

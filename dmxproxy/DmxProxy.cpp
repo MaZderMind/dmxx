@@ -1,10 +1,7 @@
 #include "DmxProxy.h"
-#include "Debug.h"
 #include "bits.h"
 
 #include <string.h>
-
-extern Debug debug;
 
 DmxProxy::DmxProxy(uint8_t uartIndex):
 	uart(uartIndex),
@@ -35,9 +32,6 @@ void DmxProxy::processRx() {
 		uint8_t byte = uart.lastRxByte();
 
 		if(uart.frameError()) {
-			// frame error received - after the last channel of a frame
-			debug.blink(); // ext sync
-
 			if(framebufferOutIndex == framebufferOutUsed) {
 				// everything in the out-buffer has been transmitted
 				// calculate new data for the out-buffer

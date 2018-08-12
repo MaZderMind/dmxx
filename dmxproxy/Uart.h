@@ -5,8 +5,6 @@
 #include <inttypes.h>
 
 #ifdef __AVR_ATmega1280__
-	#define UART_KNOWN
-
 	#define UART0_PORT PORTE
 	#define UART0_DDR DDRE
 	#define UART0_PIN_TX PE1
@@ -28,17 +26,13 @@
 	#define UART3_PIN_RX PJ0
 #else
 	#ifdef __AVR_ATmega328P__
-		#define UART_KNOWN
-
 		#define UART_PORT PORTD
 		#define UART_DDR DDRD
 		#define UART_PIN_TX PD1
 		#define UART_PIN_RX PD0
+	#else
+		#error UART Pinset unknown for this Device
 	#endif
-#endif
-
-#ifndef UART_KNOWN
-	#error UART Pinset unknown for this Device
 #endif
 
 

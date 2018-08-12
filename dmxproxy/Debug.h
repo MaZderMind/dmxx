@@ -5,38 +5,27 @@
 
 #include "Uart.h"
 
-#define BLINK_PORT PORTB
-#define BLINK_DDR DDRB
-#define BLINK_PIN PB7
+#ifdef __AVR_ATmega1280__
+	#define BLINK_PORT PORTB
+	#define BLINK_DDR DDRB
+	#define BLINK_PIN PB7
+#else
+	#ifdef __AVR_ATmega328P__
+		#define BLINK_PORT PORTB
+		#define BLINK_DDR DDRB
+		#define BLINK_PIN PB5
+	#else
+		#error Debug Pinset unknown for this Device
+	#endif
+#endif
 
 class Debug {
-private:
-	static const uint32_t BAUD_RATE = 57600;
-
 public:
-	Debug(uint8_t uartIndex);
-
-	void print(const char* message);
-	void println(const char* message);
-	void println();
-	void print(const uint8_t number);
+	Debug();
 
 	void blink(bool value);
 	void blink();
-
-private:
-	Uart uart;
-};
-
-class DebugStub {
-public:
-	void print(const char* message) { (void)(message); };
-	void println(const char* message) { (void)(message); };
-	void println() { };
-	void print(const uint8_t number) { (void)(number); };
-
-	void blink(bool value) { (void)(value); };
-	void blink() { };
+	void toggle();
 };
 
 #endif
